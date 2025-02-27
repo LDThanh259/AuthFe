@@ -6,21 +6,57 @@ import ProfilePage from './pages/ProfilePage';
 import ChangePasswordPage from './pages/ChangePasswordPage';
 import Register from './pages/RegisterPage';
 import AdminPage from './pages/AdminPage';
+import { AuthProvider} from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Unauthorized from './pages/Unauthorized';
+import Dashboard from './pages/Dashboard';
+import ClientPage from './pages/ClientPage';
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path='/forgot-password' element={<ForgotPasswordPage/>}/>
-        <Route path='/profile' element={<ProfilePage/>}/>
-        <Route path='/change-password' element={<ChangePasswordPage/>}/>
-        <Route path='/register' element={<Register/>}/>
-        <Route path='/admin' element={<AdminPage/>}/>
+  console.log('[App] Rendering application routes');
 
-      </Routes>
-    </Router>
+  return (
+    <AuthProvider>
+      <Router>
+        <Routes>
+          {/* public routes */}
+          <Route path='/' element={<Dashboard/>}/>
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path='/forgot-password' element={<ForgotPasswordPage/>}/>
+          <Route path='/change-password' element={<ChangePasswordPage/>}/>
+          <Route path='/register' element={<Register/>}/>
+          <Route path="/unauthorized" element={<Unauthorized />} />
+    
+          {/* Protected Routes */}  
+          <Route
+            path='/user-only'
+            element={
+              <ProtectedRoute roles={['Client']}>
+                <ClientPage/>
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path='/profile' 
+            element={
+              <ProtectedRoute roles={['Client']}>
+                <ProfilePage/>
+              </ProtectedRoute>
+            }
+          />
+          <Route 
+            path='/admin' 
+            element={
+              <ProtectedRoute roles={['Admin']}>
+                <AdminPage/>
+              </ProtectedRoute>
+              }
+          />
+        </Routes>
+      </Router>
+
+    </AuthProvider>
   );
 }
 
